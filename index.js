@@ -56,6 +56,7 @@ let run = async () => {
   const discordWebhook = core.getInput("discord_webhook_url").trim();
 
   let message = core.getInput("message").trim();
+  console.log(twilio);
   if (Object.values(twilio).some((val) => !!val)) {
     if (Object.values(twilio).every((val) => !!val)) {
       let twilioResponses = [];
@@ -82,7 +83,7 @@ let run = async () => {
         .filter((entry) => !!entry[1])
         .map(
           (entry) =>
-            `twilio-${entry[0]
+            `twilio_${entry[0]
               .replace(/\.?([A-Z]+)/g, function (x, y) {
                 return "_" + y.toLowerCase();
               })
