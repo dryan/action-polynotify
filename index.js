@@ -127,10 +127,8 @@ let run = async () => {
         // this is the preview text for notifications
         slackPayload.text = message;
       }
-      console.debug(slackPayload);
       let slackResponse = await axios.post(slackWebhook, slackPayload);
-      console.log(slackResponse);
-      core.setOutput("slack_result", slackResponse);
+      core.setOutput("slack_result", slackResponse.data);
     }
   } catch (error) {
     core.setFailed(error.message);
