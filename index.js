@@ -16,11 +16,6 @@ const arrayOrNull = (arr) => {
   return null;
 };
 
-const toTitleCase = (str) =>
-  str.replace(/\w\S*/g, function (txt) {
-    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-  });
-
 let run = async () => {
   try {
     const { payload, ref, workflow, eventName } = github.context;
@@ -132,6 +127,7 @@ let run = async () => {
         // this is the preview text for notifications
         slackPayload.text = message;
       }
+      console.debug(slackPayload);
       let slackResponse = await axios.post(slackWebhook, slackPayload);
       core.setOutput("slack_result", slackResponse);
     }
