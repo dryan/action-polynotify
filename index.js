@@ -56,8 +56,8 @@ let run = async () => {
   const discordWebhook = core.getInput("discord_webhook_url").trim();
 
   let message = core.getInput("message").trim();
-  if (Object.values(twilio).some()) {
-    if (Object.values(twilio).every()) {
+  if (Object.values(twilio).some((val) => !!val)) {
+    if (Object.values(twilio).every((val) => !!val)) {
       let twilioResponses = [];
       await asyncForEach(twilio.toNumbers, async (toNumber) => {
         let twilioResponse = await axios.post(
