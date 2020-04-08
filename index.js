@@ -64,7 +64,7 @@ let run = async () => {
           let twilioResponse = await axios.post(
             `https://api.twilio.com/2010-04-01/Accounts/${twilio.accountSid}/Messages`,
             qs.stringify({
-              Body: [message, referenceLink].join("\n"),
+              Body: [message, "", referenceLink].join("\n"),
               From: twilio.fromNumber,
               To: toNumber,
             }),
