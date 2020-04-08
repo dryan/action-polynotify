@@ -42,7 +42,7 @@ let run = async () => {
 
   const twilio = {
     accountSid: core.getInput("twilio_account_sid").trim(),
-    apiKeySid: core.getInput("twilio_api_key_side").trim(),
+    apiKeySid: core.getInput("twilio_api_key_sid").trim(),
     apiKeySecret: core.getInput("twilio_api_key_secret").trim(),
     fromNumber: core.getInput("twilio_from_number").trim(),
     toNumbers: arrayOrNull(
