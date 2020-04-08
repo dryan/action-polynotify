@@ -143,13 +143,13 @@ let run = async () => {
       let discordPayload = {
         username: discord.username,
         avatar: discord.avatar,
-        content: message,
+        content: [message, "", referenceLink].join("\n"),
       };
       if (color) {
         discordPayload.content = "";
         discordPayload.embeds = [
           {
-            title: message,
+            title: [message, "", referenceLink].join("\n"),
             color: parseInt(color.replace(/^#/, ""), 16),
           },
         ];
