@@ -53,6 +53,8 @@ let run = async () => {
     const message = core.getInput("message").trim();
     const color = core.getInput("color").trim();
 
+    const failOnError = !!core.getInput("fail_on_error");
+
     if (Object.values(twilio).some((val) => !!val)) {
       if (Object.values(twilio).every((val) => !!val)) {
         let twilioResponses = [];
@@ -115,6 +117,7 @@ let run = async () => {
         ],
       };
       if (color) {
+        // we need to use attachments for colors
         slackPayload = {
           attachments: [
             {
@@ -131,7 +134,9 @@ let run = async () => {
       core.setOutput("slack_result", slackResponse.data);
     }
   } catch (error) {
-    core.setFailed(error.message);
+    if (failOnError) {
+      core.setFailed(error.message);
+    }
     console.error(error);
   }
 };

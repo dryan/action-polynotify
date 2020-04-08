@@ -29,6 +29,9 @@ inputs:
   message:
     description: "The message you want to send. A link to the GitHub event that triggered this action will be added automatically."
     required: true
+  fail_on_error:
+    description: "By default this action will not register an error on the workflow if it fails. Set this to true to change that behavior."
+    default: false
 outputs:
   twilio_result:
     description: The outputs of the Twilio API calls
