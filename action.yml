@@ -22,6 +22,13 @@ inputs:
   discord_webhook_url:
     description: "The URL of your Discord channel webhook. You can create this in the settings for the channel you wish to post in."
     required: false
+  discord_username:
+    description: "The username to post to Discord as. Defaults to an empty string, which uses the username you configured your webhook with."
+    required: false
+    default: ""
+  discord_avatar:
+    description: "The URL to the avatar to post to Discord with. Defaults to an empty string, which uses the avatar you configured your webhook with."
+    default: ""
   color:
     description: "A hex color to use with Slack and Discord messages."
     required: false
@@ -31,6 +38,7 @@ inputs:
     required: true
   fail_on_error:
     description: "By default this action will not register an error on the workflow if it fails. Set this to true to change that behavior."
+    required: false
     default: false
 outputs:
   twilio_result:

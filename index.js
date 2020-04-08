@@ -47,8 +47,14 @@ let run = async () => {
           .map((num) => num.trim())
       ),
     };
-    const slackWebhook = core.getInput("slack_webhook_url").trim();
-    const discordWebhook = core.getInput("discord_webhook_url").trim();
+    const slack = {
+      webhook: core.getInput("slack_webhook_url").trim(),
+    };
+    const discord = {
+      webhook: core.getInput("discord_webhook_url").trim(),
+      username: core.getInput("discord_username").trim(),
+      avatar: core.getInput("discord_avatar").trim(),
+    };
 
     const message = core.getInput("message").trim();
     const color = core.getInput("color").trim();
@@ -95,7 +101,7 @@ let run = async () => {
         );
       }
     }
-    if (slackWebhook) {
+    if (slack.webhook) {
       let slackPayload = {
         blocks: [
           {
@@ -130,8 +136,26 @@ let run = async () => {
         // this is the preview text for notifications
         slackPayload.text = message;
       }
-      let slackResponse = await axios.post(slackWebhook, slackPayload);
+      let slackResponse = await axios.post(slack.webhook, slackPayload);
       core.setOutput("slack_result", slackResponse.data);
+    }
+    if (discord.webhook) {
+      let discordPayload = {
+        username: discord.username,
+        avatar: discord.avatar,
+        content: message,
+      };
+      if (color) {
+        discordPayload.content = "";
+        discordPayload.embeds = [
+          {
+            title: message,
+            color: parseInt(color.replace(/^#/, ""), 16),
+          },
+        ];
+      }
+      let discordResponse = await axios.post(discord.webhook, discordPayload);
+      core.setOutput("discord_result", discordResponse);
     }
   } catch (error) {
     if (failOnError) {
