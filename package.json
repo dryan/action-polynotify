@@ -1,0 +1,26 @@
+{
+  "name": "action-polynotify",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dryan/action-polynotify.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dryan/action-polynotify/issues"
+  },
+  "homepage": "https://github.com/dryan/action-polynotify#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.3",
+    "@actions/github": "^2.1.1",
+    "axios": "^0.19.2",
+    "qs": "^6.9.3"
+  }
+}

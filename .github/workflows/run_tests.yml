@@ -1,0 +1,20 @@
+name: Test Poly Notify
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+jobs:
+  test-poly-notify:
+    name: Test Poly Notify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send notification
+        uses: ./
+        with:
+          twilio_account_sid: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          twilio_api_key_sid: ${{ secrets.TWILIO_API_KEY_SID }}
+          twilio_api_key_secret: ${{ secrets.TWILIO_API_KEY_SECRET }}
+          twilio_from_number: ${{ secrets.TWILIO_FROM_NUMBER }}
+          twilio_to_numbers: ${{ secrets.TWILIO_TO_NUMBERS }}
+          message: Testing notifications

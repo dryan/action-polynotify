@@ -1,1 +1,1 @@
-# action-polynotify
+# GitHub Action: Poly Notifier

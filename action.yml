@@ -1,0 +1,47 @@
+name: "Poly Notify"
+description: "Send status updates to Slack, Twilio, and Discord"
+inputs:
+  twilio_account_sid:
+    description: "Your Twilio Account SID. Available at https://www.twilio.com/console/project/settings."
+    required: false
+  twilio_api_key_sid:
+    description: "Your Twilio API Key's SID. Available at https://www.twilio.com/console/project/api-keys."
+    required: false
+  twilio_api_key_secret:
+    description: "Your Twilio API Key's secret. Only available when the API is first created at https://www.twilio.com/console/project/api-keys."
+    required: false
+  twilio_from_number:
+    description: "The phone number, in E164 format.\nSee https://support.twilio.com/hc/en-us/articles/223183008-Formatting-International-Phone-Numbers."
+    required: false
+  twilio_to_numbers:
+    description: "The phone numbers (separated by commas) to send the message to. Also in E164 format."
+    required: false
+  slack_webhook_url:
+    description: "The URL of your Slack Incoming Webhook. Instructions for creating one at https://api.slack.com/messaging/webhooks."
+    required: false
+  discord_webhook_url:
+    description: "The URL of your Discord channel webhook. You can create this in the settings for the channel you wish to post in."
+    required: false
+  color:
+    description: "A hex color to use with Slack and Discord messages."
+    required: false
+    default: ""
+  message:
+    description: "The message you want to send. A link to the GitHub event that triggered this action will be added automatically."
+    required: true
+outputs:
+  twilio_result:
+    description: The outputs of the Twilio API calls
+  slack_result:
+    description: The output of the Slack API call
+  discord_result:
+    description: The output of the Discord API call
+  twilio:
+    description: A boolean of whether or not a Twilio message was sent
+  slack:
+    description: A boolean of whether or not a Slack message was sent
+  discord:
+    description: A boolean of whether or not a Discord message was sent
+runs:
+  using: "node12"
+  main: "index.js"
