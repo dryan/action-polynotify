@@ -20,5 +20,6 @@ jobs:
           # twilio_to_numbers: ${{ secrets.TWILIO_TO_NUMBERS }}
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
           discord_webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          discord_username: "GitHub"
+          discord_avatar: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
           message: Testing notifications
-          color: "#1B5E20"
