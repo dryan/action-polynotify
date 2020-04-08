@@ -129,6 +129,7 @@ let run = async () => {
       }
       console.debug(slackPayload);
       let slackResponse = await axios.post(slackWebhook, slackPayload);
+      console.log(slackResponse);
       core.setOutput("slack_result", slackResponse);
     }
   } catch (error) {
