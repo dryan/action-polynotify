@@ -21,3 +21,4 @@ jobs:
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
           discord_webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
           message: Testing notifications
+          color: "#1B5E20"
