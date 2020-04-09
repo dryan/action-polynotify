@@ -16,6 +16,8 @@ const arrayOrNull = (arr) => {
   return null;
 };
 
+let failOnError = false;
+
 let run = async () => {
   try {
     const { payload, ref, workflow, eventName } = github.context;
@@ -59,7 +61,7 @@ let run = async () => {
     const message = core.getInput("message").trim();
     const color = core.getInput("color").trim();
 
-    const failOnError = !!core.getInput("fail_on_error");
+    failOnError = !!core.getInput("fail_on_error");
 
     if (Object.values(twilio).some((val) => !!val)) {
       if (Object.values(twilio).every((val) => !!val)) {
