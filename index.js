@@ -2,6 +2,7 @@ const core = require("@actions/core");
 const github = require("@actions/github");
 const axios = require("axios");
 const qs = require("qs");
+const { WebClient: SlackWebClient } = require("@slack/web-api");
 
 const asyncForEach = async (array, callback) => {
   for (let index = 0; index < array.length; index++) {
@@ -14,6 +15,28 @@ const arrayOrNull = (arr) => {
     return arr;
   }
   return null;
+};
+
+// from https://github.com/voxmedia/github-action-slack-notify-build/blob/master/src/utils.js#L54
+const formatSlackChannelName = (channel) => {
+  return channel.replace(/[#@]/g, "");
+};
+
+const getSlackChannelId = async (client, channelName) => {
+  let channelId;
+  channelName = formatSlackChannelName(channelName);
+
+  for await (const page of client.paginate("conversations.list", {
+    types: "public_channel, private_channel",
+  })) {
+    const channel = page.channels.find((c) => c.name === channelName);
+    if (channel) {
+      channelId = channel.id;
+      break;
+    }
+  }
+
+  return channelId;
 };
 
 let failOnError = false;
@@ -36,32 +59,41 @@ let run = async () => {
       event === "pull_request"
         ? payload.pull_request.html_url
         : `https://github.com/${owner}/${repo}/commit/${sha}`;
-
+    const referenceLinkLabel =
+      event === "pull_request"
+        ? payload.pull_request.title
+        : `"${payload.head_commit.message}" on ${branch}`;
     const twilio = {
-      accountSid: core.getInput("twilio_account_sid").trim(),
-      apiKeySid: core.getInput("twilio_api_key_sid").trim(),
-      apiKeySecret: core.getInput("twilio_api_key_secret").trim(),
-      fromNumber: core.getInput("twilio_from_number").trim(),
+      accountSid: core.getInput("twilio_account_sid"),
+      apiKeySid: core.getInput("twilio_api_key_sid"),
+      apiKeySecret: core.getInput("twilio_api_key_secret"),
+      fromNumber: core.getInput("twilio_from_number"),
       toNumbers: arrayOrNull(
         core
           .getInput("twilio_to_numbers")
           .split(",")
           .map((num) => num.trim())
+          .filter((num) => !!num)
       ),
     };
     const slack = {
-      webhook: core.getInput("slack_webhook_url").trim(),
+      webhook: core.getInput("slack_webhook_url"),
+      token: core.getInput("slack_bot_token"),
+      channelName: core.getInput("slack_channel_name"),
+      messageId: core.getInput("slack_message_id"),
+      icon: core.getInput("slack_icon_url"),
+      username: core.getInput("slack_username"),
     };
     const discord = {
-      webhook: core.getInput("discord_webhook_url").trim(),
-      username: core.getInput("discord_username").trim(),
-      avatar: core.getInput("discord_avatar").trim(),
+      webhook: core.getInput("discord_webhook_url"),
+      username: core.getInput("discord_username"),
+      avatar: core.getInput("discord_avatar"),
     };
 
-    const message = core.getInput("message").trim();
-    const color = core.getInput("color").trim();
+    const message = core.getInput("message");
+    const color = core.getInput("color");
 
-    failOnError = !!core.getInput("fail_on_error");
+    failOnError = core.getInput("fail_on_error");
 
     if (Object.values(twilio).some((val) => !!val)) {
       if (Object.values(twilio).every((val) => !!val)) {
@@ -103,7 +135,8 @@ let run = async () => {
         );
       }
     }
-    if (slack.webhook) {
+
+    if (slack.token) {
       let slackPayload = {
         blocks: [
           {
@@ -118,7 +151,11 @@ let run = async () => {
             elements: [
               {
                 type: "mrkdwn",
-                text: referenceLink,
+                text: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}>`,
+              },
+              {
+                type: "mrkdwn",
+                text: `<${referenceLink} | ${referenceLinkLabel}>`,
               },
             ],
           },
@@ -129,7 +166,10 @@ let run = async () => {
         slackPayload = {
           attachments: [
             {
-              blocks: slackPayload.blocks,
+              fallback: message,
+              text: message,
+              footer: `<https://github.com/${owner}/${repo}/commit/${sha}/checks | ${workflow}> | <${referenceLink} | ${referenceLinkLabel}>`,
+              footer_icon: "https://github.githubassets.com/favicon.ico",
               color: color,
             },
           ],
@@ -138,9 +178,35 @@ let run = async () => {
         // this is the preview text for notifications
         slackPayload.text = message;
       }
-      let slackResponse = await axios.post(slack.webhook, slackPayload);
-      core.setOutput("slack_result", slackResponse.data);
+      if (slack.username) {
+        slackPayload.as_user = false;
+        slackPayload.username = slack.username;
+        if (slack.icon) {
+          slackPayload.icon_url = slack.icon;
+        }
+      }
+      const slackClient = new SlackWebClient(slack.token);
+      slack.channelId = await getSlackChannelId(slackClient, slack.channelName);
+      if (slack.channelId) {
+        const slackApiMethod = Boolean(slack.messageId)
+          ? "update"
+          : "postMessage";
+        slackPayload.channel = slack.channelId;
+        if (slack.messageId) {
+          slackPayload.ts = slack.messageId;
+        }
+        const slackResponse = await slackClient.chat[slackApiMethod](
+          slackPayload
+        );
+        core.setOutput("slack_message_id", slackResponse.ts);
+      } else {
+        console.error(`Slack channel ${slack.channelName} not found.`);
+        if (failOnError) {
+          core.setFailed(`Slack channel ${slack.channelName} not found.`);
+        }
+      }
     }
+
     if (discord.webhook) {
       let discordPayload = {
         username: discord.username,

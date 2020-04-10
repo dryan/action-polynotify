@@ -12,14 +12,29 @@ jobs:
       - uses: actions/checkout@v2
       - name: Send notification
         uses: ./
+        id: initial-notification
         with:
           # twilio_account_sid: ${{ secrets.TWILIO_ACCOUNT_SID }}
           # twilio_api_key_sid: ${{ secrets.TWILIO_API_KEY_SID }}
           # twilio_api_key_secret: ${{ secrets.TWILIO_API_KEY_SECRET }}
           # twilio_from_number: ${{ secrets.TWILIO_FROM_NUMBER }}
           # twilio_to_numbers: ${{ secrets.TWILIO_TO_NUMBERS }}
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          discord_webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          discord_username: "GitHub"
-          discord_avatar: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          # discord_webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          # discord_username: "GitHub"
+          # discord_avatar: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          slack_bot_token: ${{ secrets.SLACK_BOT_TOKEN }}
+          slack_username: GitHub Actions
+          slack_icon_url: https://dryan-files.s3.amazonaws.com/github.png
+          slack_channel_name: general
+          # color: "#ffb300"
           message: Testing notifications
+      - name: Update notification
+        uses: ./
+        with:
+          slack_bot_token: ${{ secrets.SLACK_BOT_TOKEN }}
+          slack_channel_name: general
+          slack_username: GitHub Actions
+          slack_icon_url: https://dryan-files.s3.amazonaws.com/github.png
+          slack_message_id: ${{ steps.initial-notification.outputs.slack_message_id }}
+          # color: "#388e3c"
+          message: "Testing notifications: completed"

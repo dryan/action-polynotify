@@ -16,8 +16,20 @@ inputs:
   twilio_to_numbers:
     description: "The phone numbers (separated by commas) to send the message to. Also in E164 format."
     required: false
-  slack_webhook_url:
-    description: "The URL of your Slack Incoming Webhook. Instructions for creating one at https://api.slack.com/messaging/webhooks."
+  slack_bot_token:
+    description: "A Slack Bot API token. See https://api.slack.com/docs/token-types for more info. Note that this overrides slack_webhook_url."
+    required: false
+  slack_username:
+    description: "The username to post Slack messages as."
+    required: false
+  slack_icon_url:
+    description: "The URL of an image to use as the Slack avatar. Only works when slack_username is also set."
+    required: false
+  slack_channel_name:
+    description: "The name of the Slack channel to post in. Only works with slack_bot_token."
+    required: false
+  slack_message_id:
+    description: "The ID of an existing Slack message, in the slack_channel_name, to update. If present, this message will be changed to the new content rather that a new message being posted."
     required: false
   discord_webhook_url:
     description: "The URL of your Discord channel webhook. You can create this in the settings for the channel you wish to post in."
@@ -43,16 +55,10 @@ inputs:
 outputs:
   twilio_result:
     description: The outputs of the Twilio API calls
-  slack_result:
-    description: The output of the Slack API call
+  slack_message_id:
+    description: The timestamp/ID of the Slack message. Can be passed back to later invocations to update the original message.
   discord_result:
     description: The output of the Discord API call
-  twilio:
-    description: A boolean of whether or not a Twilio message was sent
-  slack:
-    description: A boolean of whether or not a Slack message was sent
-  discord:
-    description: A boolean of whether or not a Discord message was sent
 runs:
   using: "node12"
   main: "index.js"
