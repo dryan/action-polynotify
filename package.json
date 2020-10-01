@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/dryan/action-polynotify#readme",
   "dependencies": {
-    "@actions/core": "^1.2.3",
+    "@actions/core": "^1.2.6",
     "@actions/github": "^2.1.1",
     "@slack/web-api": "^5.8.0",
     "axios": "^0.19.2",
